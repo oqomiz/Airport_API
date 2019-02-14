@@ -3,15 +3,12 @@
 namespace App\EventListener;
 
 use Symfony\Component\HttpKernel\Event\GetResponseForControllerResultEvent;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use ApiPlatform\Core\EventListener\EventPriorities;
 use App\Entity\User;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 class UserEventListener implements EventSubscriberInterface
 {
@@ -30,7 +27,6 @@ class UserEventListener implements EventSubscriberInterface
 
     public function onKernelView(GetResponseForControllerResultEvent $event)
     {
-
         $user = $event->getControllerResult();
         $method = $event->getRequest()->getMethod();
 
@@ -38,10 +34,10 @@ class UserEventListener implements EventSubscriberInterface
             return;
         }
 
-        if(!empty($user->getPlainPassword())):
+        if (!empty($user->getPlainPassword())) {
             $encoded = $this->encoder->encodePassword($user, $user->getPlainPassword());
             $user->setPassword($encoded);
             $user->setPlainPassword('');
-        endif;
+        }
     }
 }
