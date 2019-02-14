@@ -3,12 +3,27 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ApiResource()
+ *@ApiResource(
+ *     collectionOperations={
+ *         "get",
+ *         "post"={"validation_groups"={"Default", "postValidation"}}
+ *     },
+ *     itemOperations={
+ *         "delete",
+ *         "get",
+ *         "put"={"validation_groups"={"Default", "putValidation"}}
+ *     },
+ *     normalizationContext={"groups"={"airController_read"}},
+ *     denormalizationContext={"groups"={"airController_write"}}
+ * )
  * @ORM\Entity(repositoryClass="App\Repository\AirTraficControllerRepository")
  */
 class AirTraficController
@@ -22,21 +37,26 @@ class AirTraficController
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"controller_read", "airController_read", "airController_write"})
      */
     private $firstname;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"controller_read", "airController_read", "airController_write"})
      */
     private $lastname;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"airController_read", "airController_write"})
      */
     private $birthdate;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\FlightsControllers", mappedBy="controller")
+     * @ApiSubresource(maxDepth=1)
+     * @Groups({"airController_read"})
      */
     private $flightsControllers;
 

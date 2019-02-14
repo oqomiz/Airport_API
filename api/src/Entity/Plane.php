@@ -3,12 +3,27 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ApiResource()
+ *@ApiResource(
+ *     collectionOperations={
+ *         "get",
+ *         "post"={"validation_groups"={"Default", "postValidation"}}
+ *     },
+ *     itemOperations={
+ *         "delete",
+ *         "get",
+ *         "put"={"validation_groups"={"Default", "putValidation"}}
+ *     },
+ *     normalizationContext={"groups"={"plane_read"}},
+ *     denormalizationContext={"groups"={"plane_write"}}
+ * )
  * @ORM\Entity(repositoryClass="App\Repository\PlaneRepository")
  */
 class Plane
@@ -22,17 +37,22 @@ class Plane
 
     /**
      * @ORM\Column(type="string", length=15)
+     * @Groups({"company_read", "plane_read", "plane_write"})
      */
-    private $serial_Number;
+    private $serialNumber;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Company", inversedBy="planes")
      * @ORM\JoinColumn(nullable=false)
+     * @ApiSubresource(maxDepth=1)
+     * @Groups({"plane_read", "plane_write"})
      */
     private $company;
 
     /**
      * @ORM\OneToMany(targetEntity="Flight", mappedBy="plane")
+     * @ApiSubresource(maxDepth=1)
+     * @Groups({"plane_read"})
      */
     private $flight;
 
@@ -48,12 +68,12 @@ class Plane
 
     public function getSerialNumber(): ?string
     {
-        return $this->serial_Number;
+        return $this->serialNumber;
     }
 
-    public function setSerialNumber(string $serial_Number): self
+    public function setSerialNumber(string $serialNumber): self
     {
-        $this->serial_Number = $serial_Number;
+        $this->serialNumber = $serialNumber;
 
         return $this;
     }

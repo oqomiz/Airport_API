@@ -3,12 +3,27 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ApiResource()
+ *@ApiResource(
+ *     collectionOperations={
+ *         "get",
+ *         "post"={"validation_groups"={"Default", "postValidation"}}
+ *     },
+ *     itemOperations={
+ *         "delete",
+ *         "get",
+ *         "put"={"validation_groups"={"Default", "putValidation"}}
+ *     },
+ *     normalizationContext={"groups"={"flight_read"}},
+ *     denormalizationContext={"groups"={"flight_write"}}
+ * )
  * @ORM\Entity(repositoryClass="App\Repository\FlightRepository")
  */
 class Flight
@@ -22,70 +37,92 @@ class Flight
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"controller_read", "airport_read", "terminal_read", "track_read", "pilot_read", "plane_read", "flight_read"})
      */
     private $number;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"flight_read", "flight_write"})
      */
-    private $departure_Date;
+    private $departureDate;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"flight_read", "flight_write"})
      */
-    private $arrival_Date;
+    private $arrivalDate;
 
     /**
      * @ORM\Column(type="string", length=100)
+     * @Groups({"flight_read", "flight_write"})
      */
     private $status;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Plane", inversedBy="flight")
      * @ORM\JoinColumn(nullable=false)
+     * @ApiSubresource(maxDepth=1)
+     * @Groups({"flight_read", "flight_write"})
      */
     private $plane;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Pilot", inversedBy="flight")
      * @ORM\JoinColumn(nullable=false)
+     * @ApiSubresource(maxDepth=1)
+     * @Groups({"flight_read", "flight_write"})
      */
     private $pilot;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Track", inversedBy="departure")
+     * @ApiSubresource(maxDepth=1)
+     * @Groups({"flight_read", "flight_write"})
      */
-    private $departure_Track;
+    private $departureTrack;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Track", inversedBy="arrival")
+     * @ApiSubresource(maxDepth=1)
+     * @Groups({"flight_read", "flight_write"})
      */
-    private $arrival_Track;
+    private $arrivalTrack;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Terminal", inversedBy="departure")
+     * @ApiSubresource(maxDepth=1)
+     * @Groups({"flight_read", "flight_write"})
      */
-    private $departure_Terminal;
+    private $departureTerminal;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Terminal", inversedBy="arrival")
+     * @ApiSubresource(maxDepth=1)
+     * @Groups({"flight_read", "flight_write"})
      */
-    private $arrival_Terminal;
+    private $arrivalTerminal;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Airport", inversedBy="departure")
      * @ORM\JoinColumn(nullable=false)
+     * @ApiSubresource(maxDepth=1)
+     * @Groups({"flight_read", "flight_write"})
      */
-    private $departure_Airport;
+    private $departureAirport;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Airport", inversedBy="arrival")
      * @ORM\JoinColumn(nullable=false)
+     * @ApiSubresource(maxDepth=1)
+     * @Groups({"flight_read", "flight_write"})
      */
-    private $arrival_Airport;
+    private $arrivalAirport;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\FlightsControllers", mappedBy="flight")
+     * @ApiSubresource(maxDepth=1)
+     * @Groups({"flight_read"})
      */
     private $flightsControllers;
 
@@ -113,24 +150,24 @@ class Flight
 
     public function getDepartureDate(): ?\DateTimeInterface
     {
-        return $this->departure_Date;
+        return $this->departureDate;
     }
 
-    public function setDepartureDate(\DateTimeInterface $departure_Date): self
+    public function setDepartureDate(\DateTimeInterface $departureDate): self
     {
-        $this->departure_Date = $departure_Date;
+        $this->departureDate = $departureDate;
 
         return $this;
     }
 
     public function getArrivalDate(): ?\DateTimeInterface
     {
-        return $this->arrival_Date;
+        return $this->arrivalDate;
     }
 
-    public function setArrivalDate(\DateTimeInterface $arrival_Date): self
+    public function setArrivalDate(\DateTimeInterface $arrivalDate): self
     {
-        $this->arrival_Date = $arrival_Date;
+        $this->arrivalDate = $arrivalDate;
 
         return $this;
     }
@@ -173,72 +210,72 @@ class Flight
 
     public function getDepartureTrack(): ?Track
     {
-        return $this->departure_Track;
+        return $this->departureTrack;
     }
 
-    public function setDepartureTrack(?Track $departure_Track): self
+    public function setDepartureTrack(?Track $departureTrack): self
     {
-        $this->departure_Track = $departure_Track;
+        $this->departureTrack = $departureTrack;
 
         return $this;
     }
 
     public function getArrivalTrack(): ?Track
     {
-        return $this->arrival_Track;
+        return $this->arrivalTrack;
     }
 
-    public function setArrivalTrack(?Track $arrival_Track): self
+    public function setArrivalTrack(?Track $arrivalTrack): self
     {
-        $this->arrival_Track = $arrival_Track;
+        $this->arrivalTrack = $arrivalTrack;
 
         return $this;
     }
 
     public function getDepartureTerminal(): ?Terminal
     {
-        return $this->departure_Terminal;
+        return $this->departureTerminal;
     }
 
-    public function setDepartureTerminal(?Terminal $departure_Terminal): self
+    public function setDepartureTerminal(?Terminal $departureTerminal): self
     {
-        $this->departure_Terminal = $departure_Terminal;
+        $this->departureTerminal = $departureTerminal;
 
         return $this;
     }
 
     public function getArrivalTerminal(): ?Terminal
     {
-        return $this->arrival_Terminal;
+        return $this->arrivalTerminal;
     }
 
-    public function setArrivalTerminal(?Terminal $arrival_Terminal): self
+    public function setArrivalTerminal(?Terminal $arrivalTerminal): self
     {
-        $this->arrival_Terminal = $arrival_Terminal;
+        $this->arrivalTerminal = $arrivalTerminal;
 
         return $this;
     }
 
     public function getDepartureAirport(): ?Airport
     {
-        return $this->departure_Airport;
+        return $this->departureAirport;
     }
 
-    public function setDepartureAirport(?Airport $departure_Airport): self
+    public function setDepartureAirport(?Airport $departureAirport): self
     {
-        $this->departure_Airport = $departure_Airport;
+        $this->departureAirport = $departureAirport;
 
         return $this;
     }
 
     public function getArrivalAirport(): ?Airport
     {
-        return $this->arrival_Airport;
+        return $this->arrivalAirport;
     }
 
-    public function setArrivalAirport(?Airport $arrival_Airport): self
+    public function setArrivalAirport(?Airport $arrivalAirport): self
     {
-        $this->arrival_Airport = $arrival_Airport;
+        $this->arrivalAirport = $arrivalAirport;
 
         return $this;
     }
