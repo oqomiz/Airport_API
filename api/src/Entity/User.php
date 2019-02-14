@@ -40,6 +40,11 @@ class User implements UserInterface
      */
     private $plainPassword;
 
+    /**
+     * @ORM\Column(name="additional_roles", type="string", nullable=true)
+     */
+    private $additionalRoles;
+
     public function __construct($username)
     {
         $this->isActive = true;
@@ -73,7 +78,13 @@ class User implements UserInterface
 
     public function getRoles()
     {
-        return ['ROLE_USER'];
+        $roles = [];
+        if (!empty($this->additionalRoles)) {
+            $roles = explode(',', $this->additionalRoles);
+        }
+        $roles = array_merge($roles, ['ROLE_USER']);
+
+        return $roles;
     }
 
     public function eraseCredentials() {}
@@ -92,5 +103,21 @@ class User implements UserInterface
     public function setPlainPassword($plainPassword): void
     {
         $this->plainPassword = $plainPassword;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAdditionalRoles()
+    {
+        return $this->additionalRoles;
+    }
+
+    /**
+     * @param mixed $additionalRoles
+     */
+    public function setAdditionalRoles($additionalRoles): void
+    {
+        $this->additionalRoles = $additionalRoles;
     }
 }
