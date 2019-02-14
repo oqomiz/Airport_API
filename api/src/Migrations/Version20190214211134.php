@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20190214085342 extends AbstractMigration
+final class Version20190214211134 extends AbstractMigration
 {
     public function getDescription() : string
     {
@@ -22,7 +22,6 @@ final class Version20190214085342 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'postgresql', 'Migration can only be executed safely on \'postgresql\'.');
 
-        $this->addSql('DROP SEQUENCE greeting_id_seq CASCADE');
         $this->addSql('CREATE SEQUENCE airport_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE air_trafic_controller_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE city_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
@@ -58,7 +57,7 @@ final class Version20190214085342 extends AbstractMigration
         $this->addSql('CREATE INDEX IDX_C1B32D80979B1AD6 ON plane (company_id)');
         $this->addSql('CREATE TABLE terminal (id INT NOT NULL, airport_id INT NOT NULL, name VARCHAR(255) NOT NULL, code VARCHAR(45) NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_8F7B1541289F53C8 ON terminal (airport_id)');
-        $this->addSql('CREATE TABLE track (id INT NOT NULL, airport_id INT NOT NULL, code VARCHAR(45) NOT NULL, name VARCHAR(255) NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE track (id INT NOT NULL, airport_id INT NOT NULL, name VARCHAR(255) NOT NULL, code VARCHAR(45) NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_D6E3F8A6289F53C8 ON track (airport_id)');
         $this->addSql('ALTER TABLE airport ADD CONSTRAINT FK_7E91F7C28BAC62AF FOREIGN KEY (city_id) REFERENCES city (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE city ADD CONSTRAINT FK_2D5B0234F92F3E70 FOREIGN KEY (country_id) REFERENCES country (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
@@ -75,7 +74,6 @@ final class Version20190214085342 extends AbstractMigration
         $this->addSql('ALTER TABLE plane ADD CONSTRAINT FK_C1B32D80979B1AD6 FOREIGN KEY (company_id) REFERENCES company (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE terminal ADD CONSTRAINT FK_8F7B1541289F53C8 FOREIGN KEY (airport_id) REFERENCES airport (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE track ADD CONSTRAINT FK_D6E3F8A6289F53C8 FOREIGN KEY (airport_id) REFERENCES airport (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('DROP TABLE greeting');
     }
 
     public function down(Schema $schema) : void
@@ -110,8 +108,6 @@ final class Version20190214085342 extends AbstractMigration
         $this->addSql('DROP SEQUENCE plane_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE terminal_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE track_id_seq CASCADE');
-        $this->addSql('CREATE SEQUENCE greeting_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
-        $this->addSql('CREATE TABLE greeting (id INT NOT NULL, name VARCHAR(255) NOT NULL, PRIMARY KEY(id))');
         $this->addSql('DROP TABLE airport');
         $this->addSql('DROP TABLE air_trafic_controller');
         $this->addSql('DROP TABLE city');

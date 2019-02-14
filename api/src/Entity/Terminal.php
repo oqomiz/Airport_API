@@ -3,12 +3,27 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ApiResource()
+ *@ApiResource(
+ *     collectionOperations={
+ *         "get",
+ *         "post"={"validation_groups"={"Default", "postValidation"}}
+ *     },
+ *     itemOperations={
+ *         "delete",
+ *         "get",
+ *         "put"={"validation_groups"={"Default", "putValidation"}}
+ *     },
+ *     normalizationContext={"groups"={"terminal_read"}},
+ *     denormalizationContext={"groups"={"terminal_write"}}
+ * )
  * @ORM\Entity(repositoryClass="App\Repository\TerminalRepository")
  */
 class Terminal
@@ -22,27 +37,35 @@ class Terminal
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"flight_read", "airport_read", "terminal_read", "terminal_write"})
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=45)
+     * @Groups({"terminal_read", "terminal_write"})
      */
     private $code;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Airport", inversedBy="terminals")
      * @ORM\JoinColumn(nullable=false)
+     * @ApiSubresource(maxDepth=1)
+     * @Groups({"terminal_read", "terminal_write"})
      */
     private $airport;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Flight", mappedBy="departure_Terminal")
+     * @ORM\OneToMany(targetEntity="App\Entity\Flight", mappedBy="departureTerminal")
+     * @ApiSubresource(maxDepth=1)
+     * @Groups({"terminal_read"})
      */
     private $departure;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Flight", mappedBy="arrival_Terminal")
+     * @ORM\OneToMany(targetEntity="App\Entity\Flight", mappedBy="arrivalTerminal")
+     * @ApiSubresource(maxDepth=1)
+     * @Groups({"terminal_read"})
      */
     private $arrival;
 

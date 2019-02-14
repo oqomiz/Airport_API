@@ -3,12 +3,27 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ApiResource()
+ *@ApiResource(
+ *     collectionOperations={
+ *         "get",
+ *         "post"={"validation_groups"={"Default", "postValidation"}}
+ *     },
+ *     itemOperations={
+ *         "delete",
+ *         "get",
+ *         "put"={"validation_groups"={"Default", "putValidation"}}
+ *     },
+ *     normalizationContext={"groups"={"airport_read"}},
+ *     denormalizationContext={"groups"={"airport_write"}}
+ * )
  * @ORM\Entity(repositoryClass="App\Repository\AirportRepository")
  */
 class Airport
@@ -22,32 +37,43 @@ class Airport
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"flight_read", "terminal_read", "track_read", "city_read", "airport_read", "airport_write"})
      */
     private $name;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\City", inversedBy="airports")
      * @ORM\JoinColumn(nullable=false)
+     * @ApiSubresource(maxDepth=1)
+     * @Groups({"airport_read", "airport_write"})
      */
     private $city;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Track", mappedBy="airport")
+     * @ApiSubresource(maxDepth=1)
+     * @Groups({"airport_read"})
      */
     private $tracks;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Terminal", mappedBy="airport")
+     * @ApiSubresource(maxDepth=1)
+     * @Groups({"airport_read"})
      */
     private $terminals;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Flight", mappedBy="departure_Airport")
+     * @ORM\OneToMany(targetEntity="App\Entity\Flight", mappedBy="departureAirport")
+     * @ApiSubresource(maxDepth=1)
+     * @Groups({"airport_read"})
      */
     private $departure;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Flight", mappedBy="arrival_Airport")
+     * @ORM\OneToMany(targetEntity="App\Entity\Flight", mappedBy="arrivalAirport")
+     * @ApiSubresource(maxDepth=1)
+     * @Groups({"airport_read"})
      */
     private $arrival;
 

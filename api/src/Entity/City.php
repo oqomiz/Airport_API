@@ -3,12 +3,27 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ApiResource()
+ *@ApiResource(
+ *     collectionOperations={
+ *         "get",
+ *         "post"={"validation_groups"={"Default", "postValidation"}}
+ *     },
+ *     itemOperations={
+ *         "delete",
+ *         "get",
+ *         "put"={"validation_groups"={"Default", "putValidation"}}
+ *     },
+ *     normalizationContext={"groups"={"city_read"}},
+ *     denormalizationContext={"groups"={"city_write"}}
+ * )
  * @ORM\Entity(repositoryClass="App\Repository\CityRepository")
  */
 class City
@@ -22,17 +37,22 @@ class City
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"country_read", "airport_read", "city_read", "city_write"})
      */
     private $name;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Country", inversedBy="cities")
      * @ORM\JoinColumn(nullable=false)
+     * @ApiSubresource(maxDepth=1)
+     * @Groups({"city_read", "city_write"})
      */
     private $country;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Airport", mappedBy="city")
+     * @ApiSubresource(maxDepth=1)
+     * @Groups({"city_read"})
      */
     private $airports;
 

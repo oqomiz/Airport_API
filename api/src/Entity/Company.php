@@ -3,12 +3,27 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ApiResource()
+ *@ApiResource(
+ *     collectionOperations={
+ *         "get",
+ *         "post"={"validation_groups"={"Default", "postValidation"}}
+ *     },
+ *     itemOperations={
+ *         "delete",
+ *         "get",
+ *         "put"={"validation_groups"={"Default", "putValidation"}}
+ *     },
+ *     normalizationContext={"groups"={"company_read"}},
+ *     denormalizationContext={"groups"={"company_write"}}
+ * )
  * @ORM\Entity(repositoryClass="App\Repository\CompanyRepository")
  */
 class Company
@@ -22,11 +37,14 @@ class Company
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"plane_read", "company_read", "company_write"})
      */
     private $name;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Plane", mappedBy="company")
+     * @ApiSubresource(maxDepth=1)
+     * @Groups({"company_read"})
      */
     private $planes;
 
