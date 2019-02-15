@@ -37,6 +37,7 @@ class FlightsControllers
      * @ORM\ManyToOne(targetEntity="App\Entity\AirTraficController", inversedBy="flightsControllers")
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"controller_read", "controller_write"})
+     * @Assert\NotNull()
      */
     private $controller;
 
@@ -44,6 +45,7 @@ class FlightsControllers
      * @ORM\ManyToOne(targetEntity="App\Entity\Flight", inversedBy="flightsControllers")
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"controller_read", "controller_write"})
+     * @Assert\NotNull()
      */
     private $flight;
 

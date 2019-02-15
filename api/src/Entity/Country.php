@@ -38,18 +38,41 @@ class Country
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"city_read", "country_read", "country_write"})
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *     min="1",
+     *     max="255",
+     *     minMessage="Le nom doit être de 1 lettre minimum",
+     *     maxMessage="Le nom doit être de 255 Lettres maximum",
+     *     groups={"postValidation", "putValidation"}
+     * )
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=5)
      * @Groups({"country_read", "country_write"})
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *     min="2",
+     *     max="2",
+     *     exactMessage="Le code doit être composé de 2 Lettres",
+     *     groups={"postValidation", "putValidation"}
+     * )
      */
     private $code;
 
     /**
      * @ORM\Column(type="string", length=45)
      * @Groups({"country_read", "country_write"})
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *     min="2",
+     *     max="45",
+     *     minMessage="La langue doit être de 1 lettre minimum",
+     *     maxMessage="La langue doit être de 45 Lettres maximum",
+     *     groups={"postValidation", "putValidation"}
+     * )
      */
     private $lang;
 

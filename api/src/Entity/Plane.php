@@ -38,6 +38,15 @@ class Plane
     /**
      * @ORM\Column(type="string", length=15)
      * @Groups({"company_read", "plane_read", "plane_write"})
+     * @Assert\Type("alnum")
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *     min="4",
+     *     max="12",
+     *     minMessage="Le serialNumber doit être de 4 Lettres minimum",
+     *     maxMessage="Le SerialNumber doit être de 12 Lettres maximum",
+     *     groups={"postValidation", "putValidation"}
+     * )
      */
     private $serialNumber;
 
@@ -46,6 +55,7 @@ class Plane
      * @ORM\JoinColumn(nullable=false)
      * @ApiSubresource(maxDepth=1)
      * @Groups({"plane_read", "plane_write"})
+     * @Assert\NotNull()
      */
     private $company;
 

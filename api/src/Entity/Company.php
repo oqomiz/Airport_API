@@ -38,6 +38,14 @@ class Company
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"plane_read", "company_read", "company_write"})
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *     min="1",
+     *     max="255",
+     *     minMessage="Le nom doit être de 1 lettre minimum",
+     *     maxMessage="Le nom doit être de 255 Lettres maximum",
+     *     groups={"postValidation", "putValidation"}
+     * )
      */
     private $name;
 
