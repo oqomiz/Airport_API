@@ -5,9 +5,23 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ApiResource()
+ *@ApiResource(
+ *     collectionOperations={
+ *         "get",
+ *         "post"={"validation_groups"={"Default", "postValidation"}}
+ *     },
+ *     itemOperations={
+ *         "delete",
+ *         "get",
+ *         "put"={"validation_groups"={"Default", "putValidation"}}
+ *     },
+ *     normalizationContext={"groups"={"user_read"}},
+ *     denormalizationContext={"groups"={"user_write"}}
+ * )
  * @ORM\Table(name="app_users")
  * @ORM\Entity
  */
@@ -22,11 +36,13 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=25, unique=true)
+     * @Groups({"user_read", "user_write"})
      */
     private $username;
 
     /**
      * @ORM\Column(type="string", length=500)
+     * @Groups({"user_read"})
      */
     private $password;
 
@@ -37,11 +53,13 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(name="plain_password", type="string")
+     * @Groups({"user_write"})
      */
     private $plainPassword;
 
     /**
      * @ORM\Column(name="additional_roles", type="string", nullable=true)
+     * @Groups({"user_read", "user_write"})
      */
     private $additionalRoles;
 
