@@ -8,9 +8,16 @@ use App\Entity\Flight;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\KernelEvents;
+use App\Service\Flight as FlightService;
 
 class FlightEventListener implements EventSubscriberInterface
 {
+    protected $flightService;
+
+    public function __construct(FlightService $flightService)
+    {
+        $this->flightService = $flightService;
+    }
 
     public static function getSubscribedEvents()
     {
@@ -28,7 +35,7 @@ class FlightEventListener implements EventSubscriberInterface
             return;
         }
 
-        // TODO : create service to generate flight number
-        $flight->setNumber('test');
+        $flight->setNumber($this->flightService->generateFlightNumber());
+        $flight->setStatus('planned');
     }
 }
