@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Validator\Constraint as AppConstraint;
 
 /**
  *@ApiResource(
@@ -44,18 +45,23 @@ class Flight
     /**
      * @ORM\Column(type="datetime")
      * @Groups({"flight_read", "flight_write"})
+     * @Assert\Expression("value < this.getArrivalDate()",
+     *     message="La date de départ doit être avant la date d'arrivée")
      */
     private $departureDate;
 
     /**
      * @ORM\Column(type="datetime")
      * @Groups({"flight_read", "flight_write"})
+     * @Assert\Expression("value > this.getDepartureDate()",
+     *     message="La date d'arrivée doit être après la date de départ")
      */
     private $arrivalDate;
 
     /**
      * @ORM\Column(type="string", length=100)
      * @Groups({"flight_read", "flight_write"})
+     * @AppConstraint\StringConstraint
      */
     private $status;
 
@@ -64,6 +70,7 @@ class Flight
      * @ORM\JoinColumn(nullable=false)
      * @ApiSubresource(maxDepth=1)
      * @Groups({"flight_read", "flight_write"})
+     * @Assert\NotNull()
      */
     private $plane;
 
@@ -72,6 +79,7 @@ class Flight
      * @ORM\JoinColumn(nullable=false)
      * @ApiSubresource(maxDepth=1)
      * @Groups({"flight_read", "flight_write"})
+     * @Assert\NotNull()
      */
     private $pilot;
 
@@ -79,6 +87,8 @@ class Flight
      * @ORM\ManyToOne(targetEntity="App\Entity\Track", inversedBy="departure")
      * @ApiSubresource(maxDepth=1)
      * @Groups({"flight_read", "flight_write"})
+     * @Assert\Expression("value.getAirport() == this.getDepartureAirport()",
+     *     message="La piste de départ doit appartenir à l'aéroport de départ")
      */
     private $departureTrack;
 
@@ -86,6 +96,8 @@ class Flight
      * @ORM\ManyToOne(targetEntity="App\Entity\Track", inversedBy="arrival")
      * @ApiSubresource(maxDepth=1)
      * @Groups({"flight_read", "flight_write"})
+     * @Assert\Expression("value.getAirport() == this.getArrivalAirport()",
+     *     message="La piste d'arrivée doit appartenir à l'aéroport d'arrivée")
      */
     private $arrivalTrack;
 
@@ -93,6 +105,8 @@ class Flight
      * @ORM\ManyToOne(targetEntity="App\Entity\Terminal", inversedBy="departure")
      * @ApiSubresource(maxDepth=1)
      * @Groups({"flight_read", "flight_write"})
+     * @Assert\Expression("value.getAirport() == this.getDepartureAirport()",
+     *     message="Le terminal de départ doit appartenir à l'aéroport de départ")
      */
     private $departureTerminal;
 
@@ -100,6 +114,8 @@ class Flight
      * @ORM\ManyToOne(targetEntity="App\Entity\Terminal", inversedBy="arrival")
      * @ApiSubresource(maxDepth=1)
      * @Groups({"flight_read", "flight_write"})
+     * @Assert\Expression("value.getAirport() == this.getArrivalAirport()",
+     *     message="Le terminal d'arrivée doit appartenir à l'aéroport d'arrivée")
      */
     private $arrivalTerminal;
 
@@ -108,6 +124,9 @@ class Flight
      * @ORM\JoinColumn(nullable=false)
      * @ApiSubresource(maxDepth=1)
      * @Groups({"flight_read", "flight_write"})
+     * @Assert\NotNull()
+     * @Assert\Expression("value != this.getArrivalAirport()",
+     *     message="L'aéroport de départ doit être différent de l'aéroport d'arrivée")     *
      */
     private $departureAirport;
 
@@ -116,6 +135,9 @@ class Flight
      * @ORM\JoinColumn(nullable=false)
      * @ApiSubresource(maxDepth=1)
      * @Groups({"flight_read", "flight_write"})
+     * @Assert\NotNull()
+     * @Assert\Expression("value != this.getDepartureAirport()",
+     *     message="L'aéroport d'arrivée doit être différent de l'aéroport de départ")
      */
     private $arrivalAirport;
 
