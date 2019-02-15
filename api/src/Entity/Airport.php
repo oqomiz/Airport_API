@@ -38,6 +38,14 @@ class Airport
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"flight_read", "terminal_read", "track_read", "city_read", "airport_read", "airport_write"})
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *     min="1",
+     *     max="255",
+     *     minMessage="Le nom doit être de 1 lettre minimum",
+     *     maxMessage="Le nom doit être de 255 Lettres maximum",
+     *     groups={"postValidation", "putValidation"}
+     * )
      */
     private $name;
 
@@ -46,6 +54,7 @@ class Airport
      * @ORM\JoinColumn(nullable=false)
      * @ApiSubresource(maxDepth=1)
      * @Groups({"airport_read", "airport_write"})
+     * @Assert\NotNull()
      */
     private $city;
 

@@ -38,12 +38,28 @@ class Terminal
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"flight_read", "airport_read", "terminal_read", "terminal_write"})
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *     min="1",
+     *     max="255",
+     *     minMessage="Le nom doit être de 1 lettre minimum",
+     *     maxMessage="Le nom doit être de 255 Lettres maximum",
+     *     groups={"postValidation", "putValidation"}
+     * )
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=45)
      * @Groups({"terminal_read", "terminal_write"})
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *     min="2",
+     *     max="45",
+     *     minMessage="Le code doit être de 2 lettres minimum",
+     *     maxMessage="Le code doit être de 45 Lettres maximum",
+     *     groups={"postValidation", "putValidation"}
+     * )
      */
     private $code;
 
@@ -52,6 +68,7 @@ class Terminal
      * @ORM\JoinColumn(nullable=false)
      * @ApiSubresource(maxDepth=1)
      * @Groups({"terminal_read", "terminal_write"})
+     * @Assert\NotNull()
      */
     private $airport;
 

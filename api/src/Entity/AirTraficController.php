@@ -38,18 +38,37 @@ class AirTraficController
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"controller_read", "airController_read", "airController_write"})
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *     min="1",
+     *     max="255",
+     *     minMessage="Le prénom doit être de 1 lettre minimum",
+     *     maxMessage="Le prénom doit être de 255 Lettres maximum",
+     *     groups={"postValidation", "putValidation"}
+     * )
      */
     private $firstname;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"controller_read", "airController_read", "airController_write"})
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *     min="1",
+     *     max="255",
+     *     minMessage="Le nom doit être de 1 lettre minimum",
+     *     maxMessage="Le nom doit être de 255 Lettres maximum",
+     *     groups={"postValidation", "putValidation"}
+     * )
      */
     private $lastname;
 
     /**
      * @ORM\Column(type="datetime")
      * @Groups({"airController_read", "airController_write"})
+     * @Assert\NotBlank()
+     * @Assert\LessThanOrEqual("-18 years")
+     * @Assert\GreaterThanOrEqual("-70 years")
      */
     private $birthdate;
 
